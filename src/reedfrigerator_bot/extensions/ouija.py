@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from os import environ
+
 from .web import routes, jinja_env
 
 import hikari as hk
@@ -38,7 +40,7 @@ async def ouija_post(request: web.Request) -> web.Response:
 
     messages.set(message, True, 60)
 
-    await plugin.client.rest.create_message(1211715120812527616, message + "\n-# Talk after you die: [Ouija-Reed](https://reedfrigerator.lacklab.net/ouija)")
+    await plugin.client.rest.create_message(environ["OUIJA_CHANNEL"], message + "\n-# Talk after you die: [Ouija-Reed](https://reedfrigerator.lacklab.net/ouija)")
 
     return web.Response(body="Message sent.", content_type="text/html", status=201)
 

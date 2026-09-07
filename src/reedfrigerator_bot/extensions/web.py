@@ -4,6 +4,7 @@ from __future__ import annotations
 __all__ = "routes", "jinja_env"
 
 import asyncio
+from os import environ
 
 import aiohttp_cors
 import hikari as hk
@@ -52,7 +53,7 @@ async def start_webserver(_: hk.StartedEvent) -> None:
 
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", 8080)
+    site = web.TCPSite(runner, "127.0.0.1", int(environ["PORT"]))
     await site.start()
 
     await asyncio.Event().wait()
