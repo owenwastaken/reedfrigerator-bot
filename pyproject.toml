@@ -1,0 +1,25 @@
+[project]
+name = "reedfrigerator-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Owen Ryan", email = "owen@owenryan.us" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "aiohttp>=3.14.3",
+    "hikari[speedups]>=2.6.0",
+    "hikari-arc>=2.3.2",
+    "uvloop>=0.22.1; sys_platform != 'nt'",
+    "jinja2>=3.1.6",
+    "aiohttp-cors>=0.8.1",
+    "emoji>=2.15.0",
+]
+
+[project.scripts]
+reedfrigerator-bot = "reedfrigerator_bot:main"
+
+[build-system]
+requires = ["uv_build>=0.12.9,<0.13.0"]
+build-backend = "uv_build"

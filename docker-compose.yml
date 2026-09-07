@@ -1,0 +1,9 @@
+services:
+  reedfrigerator:
+    build: .
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TOKEN: todo
+      PORT: 8080
+      OUIJA_CHANNEL: 413070382636072960
