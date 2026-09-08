@@ -1,4 +1,5 @@
 """Web server core"""
+
 from __future__ import annotations
 
 __all__ = "routes", "jinja_env"
@@ -7,16 +8,18 @@ import asyncio
 from os import environ
 
 import aiohttp_cors
-import hikari as hk
 import arc
+import hikari as hk
 from aiohttp import web
-from jinja2 import PackageLoader, Environment
+from jinja2 import Environment, PackageLoader
 
 plugin = arc.GatewayPlugin(__name__)
 
 jinja_env = Environment(
     loader=PackageLoader("reedfrigerator_bot", "templates/"),
-    trim_blocks=True, lstrip_blocks=True, auto_reload=True
+    trim_blocks=True,
+    lstrip_blocks=True,
+    auto_reload=True,
 )
 
 routes = web.RouteTableDef()
@@ -39,14 +42,17 @@ async def start_webserver(_: hk.StartedEvent) -> None:
     app.add_routes(routes)
     app.on_response_prepare(on_prepare)
 
-    cors = aiohttp_cors.setup(app, defaults={
-        "https://reedfrigerator.lacklab.net": aiohttp_cors.ResourceOptions(
-            allow_credentials=True,
-            expose_headers="*",
-            allow_headers="*",
-            allow_methods="*",
-        )
-    })
+    cors = aiohttp_cors.setup(
+        app,
+        defaults={
+            "https://reedfrigerator.lacklab.net": aiohttp_cors.ResourceOptions(
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+                allow_methods="*",
+            )
+        },
+    )
 
     for route in app.router.routes():
         cors.add(route)

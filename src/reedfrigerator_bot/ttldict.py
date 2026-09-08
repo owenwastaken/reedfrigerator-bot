@@ -21,7 +21,7 @@ class TTLDict:
     """
 
     def _garbage_collect(func):
-        """ Decorator that causes expired keys to be evicted before the target method is called"""
+        """Decorator that causes expired keys to be evicted before the target method is called"""
 
         def pre_gc(self, *args, **kwargs):
             self.gc()
@@ -30,7 +30,7 @@ class TTLDict:
         return pre_gc
 
     def __init__(self, gettimefunc=time.time):
-        """ This class maintains two structures: The first `__dict` is a dictionary that contains
+        """This class maintains two structures: The first `__dict` is a dictionary that contains
         all the kv-pairs in the TTL dict. The second `__ttls` is a heap ordered by expiry unix
         timestamp.
         Before any elements are accessed, expired keys are garbage collected.
@@ -50,7 +50,7 @@ class TTLDict:
     def __len__(self):
         return len(self.__dict)
 
-    def set(self, key, value, ttl_seconds=float('INF')):
+    def set(self, key, value, ttl_seconds=float("INF")):
         expire_ts = self.__gettime() + ttl_seconds
         entry = (expire_ts, key)
 

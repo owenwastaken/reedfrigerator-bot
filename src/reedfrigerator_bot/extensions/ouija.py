@@ -4,17 +4,17 @@ from __future__ import annotations
 
 from os import environ
 
-from .web import routes, jinja_env
-
-import hikari as hk
 import arc
-from aiohttp import web
 import emoji
+from aiohttp import web
 
 from ..ttldict import TTLDict
+from .web import jinja_env, routes
 
 plugin = arc.GatewayPlugin(__name__)
 
+
+channel = environ["OUIJA_CHANNEL"]
 
 messages = TTLDict()
 
@@ -23,6 +23,7 @@ messages = TTLDict()
 async def ouija(_: web.Request) -> web.Response:
     template = jinja_env.get_template("ouija.html.jinja2")
     return web.Response(body=template.render(), content_type="text/html")
+
 
 @routes.post("/ouija")
 async def ouija_post(request: web.Request) -> web.Response:
@@ -40,7 +41,11 @@ async def ouija_post(request: web.Request) -> web.Response:
 
     messages.set(message, True, 60)
 
-    await plugin.client.rest.create_message(environ["OUIJA_CHANNEL"], message + "\n-# Talk after you die: [Ouija-Reed](https://reedfrigerator.lacklab.net/ouija)")
+    await plugin.client.rest.create_message(
+        channel,
+        message
+        + "\n-# Talk after you die: [Ouija-Reed](https://reedfrigerator.lacklab.net/ouija)",
+    )
 
     return web.Response(body="Message sent.", content_type="text/html", status=201)
 
@@ -48,6 +53,7 @@ async def ouija_post(request: web.Request) -> web.Response:
 @arc.loader()
 def loader(client: arc.GatewayClient) -> None:
     client.add_plugin(plugin)
+
 
 @arc.unloader()
 def unloader(client: arc.GatewayClient) -> None:
