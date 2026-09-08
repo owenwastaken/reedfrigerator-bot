@@ -44,7 +44,7 @@ async def ouija_post(request: web.Request) -> web.Response:
     await plugin.client.rest.create_message(
         channel,
         message
-        + "\n-# Talk after you die: [Ouija-Reed](https://reedfrigerator.lacklab.net/ouija)",
+        + "\n-# Talk after you die: [Emojia](https://reedfrigerator.lacklab.net/ouija)",
     )
 
     return web.Response(body="Message sent.", content_type="text/html", status=201)
