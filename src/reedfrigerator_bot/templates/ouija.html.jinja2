@@ -35,7 +35,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         const input = document.querySelector("input");
 
-        document.addEventListener("keydown", ({key}) => {
+        input.addEventListener("keydown", ({key}) => {
             if (key === "Backspace" || key === "Delete") {
                 input.value = removeLastChar(input.value)
             }
