@@ -29,17 +29,16 @@ async def ouija(_: web.Request) -> web.Response:
 async def ouija_post(request: web.Request) -> web.Response:
     message = (await request.post())["message"]
 
-    if len(message) == 0:
-        return web.Response(status=400)
+    if len(message) == 0 or len(message) > 50:
+        return web.Response(status=400, body="Invalid size")
 
-    for char in message:
-        if not emoji.is_emoji(char):
-            return web.Response(status=400)
+    if not emoji.purely_emoji(message):
+        return web.Response(status=400, body="Message must only contain emoji.")
 
     if messages.get(message):
-        return web.Response(status=429)
+        return web.Response(status=429, body="Message is ratelimited. Try sending something else")
 
-    messages.set(message, True, 60)
+    messages.set(message, True, 60*5)
 
     await plugin.client.rest.create_message(
         channel,
