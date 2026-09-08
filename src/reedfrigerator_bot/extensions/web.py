@@ -26,9 +26,14 @@ routes = web.RouteTableDef()
 
 
 @routes.get("/")
-async def index(request: web.Request) -> web.Response:
+async def index(_request: web.Request) -> web.Response:
     template = jinja_env.get_template("iis8.html")
     return web.Response(body=template.render(), content_type="text/html")
+
+
+@routes.get("/robots.txt")
+async def robots(_request: web.Request) -> web.Response:
+    return web.Response(body="User-agent: *\nDisallow: /")
 
 
 @plugin.listen(hk.StartedEvent)
