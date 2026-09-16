@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from os import environ
 
 import arc
@@ -21,8 +22,15 @@ messages = TTLDict()
 
 @routes.get("/ouija")
 async def ouija(_: web.Request) -> web.Response:
+    # Cache but im a bit lazy
+    if (emojis := messages.get("CACHE!")) is None:
+        emojis = await plugin.client.rest.fetch_application_emojis(plugin.client.application)
+        messages.set("CACHE!", emojis, 60*5)
+
+    emoji_json = [{"name": e.mention, "shortcodes": [e.name], "url": e.url} for e in emojis]
+
     template = jinja_env.get_template("ouija.html.jinja2")
-    return web.Response(body=template.render(), content_type="text/html")
+    return web.Response(body=template.render(emoji_json=emoji_json), content_type="text/html")
 
 
 @routes.post("/ouija")
@@ -48,6 +56,33 @@ async def ouija_post(request: web.Request) -> web.Response:
 
     return web.Response(body="Message sent.", content_type="text/html", status=201)
 
+
+@routes.post("/ouija/post")
+async def ouija_post(request: web.Request) -> web.Response:
+    message = await request.json()
+
+    if len(message) == 0 or len(message) > 50:
+        return web.Response(status=400, body="Invalid size")
+
+    for element in message:
+        if not emoji.purely_emoji(element) and not re.match(r"<:[a-zA-Z]*:\d*>", element):
+            if not emoji.purely_emoji(message):
+                return web.Response(status=400, body="Message must only contain emoji.")
+
+    ratelimit_tuple = tuple(message)
+
+    if messages.get(ratelimit_tuple):
+        return web.Response(status=429, body="Message is ratelimited. Try sending something else")
+
+    messages.set(ratelimit_tuple, True, 60*15)
+
+    await plugin.client.rest.create_message(
+        channel,
+        ''.join(message)
+        + "\n-# Talk after you die: [Emojia](https://reedfrigerator.lacklab.net/ouija)",
+    )
+
+    return web.Response(body="Message sent!", content_type="text/html", status=201)
 
 @arc.loader()
 def loader(client: arc.GatewayClient) -> None:
